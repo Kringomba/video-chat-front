@@ -28,7 +28,7 @@
     padding: 60px 20% 0;
 }
 
-input[type="text"] {
+.input-text {
     margin: 10px 0 40px 0;
     padding: 5px 5px;
     height: 30px;

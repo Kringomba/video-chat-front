@@ -1,15 +1,34 @@
 import React, {useState} from "react";
+import * as Icon from 'react-bootstrap-icons';
+import {Chat} from './components'
 import './style.css';
+
 
 export const Call: React.FC = () => {
     const [micro, setMicro] = useState<boolean>(false)
     const [webcam, setWebcam] = useState<boolean>(false)
     const [chat, setChat] = useState<boolean>(false)
     return <div className="background">
-        <div className="btn-row">
-            <div className={micro ? 'on-micro' : 'off-micro'} onClick={()=>setMicro(!micro)}/>
-            <div className={webcam ? 'on-webcam' : 'off-webcam'} onClick={()=>setWebcam(!webcam)}/>
-            <div className={chat ? 'on-chat' : 'off-chat'} onClick={()=>setChat(!chat)}/>
+        {chat ? <Chat/> : null}
+        <div className="btn-bottom" style={chat ? {width: '75%'} : undefined}>
+            <div className="btn-row">
+                <div className="btn" onClick={() => setMicro(!micro)}>
+                    {micro ?
+                        <Icon.MicFill size={40}/> :
+                        <Icon.MicMuteFill size={40}/>}
+                </div>
+                <div className="btn" onClick={() => setWebcam(!webcam)}>
+                    {webcam ?
+                        <Icon.CameraVideoFill size={40}/> :
+                        <Icon.CameraVideoOffFill size={40}/>}
+                </div>
+                <div className="btn" onClick={() => setChat(!chat)}>
+                    <Icon.ChatLeft size={40}/>
+                </div>
+                <div className="btn" onClick={()=>{}}>
+                    <Icon.BoxArrowRight size={40}/>
+                </div>
+            </div>
         </div>
     </div>
 }
