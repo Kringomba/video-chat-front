@@ -70,8 +70,3 @@
     align-items: center;
     justify-content: center;
 }
-
-.send-message-btn: {
-    border: 1px solid var(--color-3);
-    outline: none;
-}
