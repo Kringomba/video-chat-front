@@ -5,7 +5,7 @@
     height: 100vh;
     border: 1px solid var(--color-3);
     width: 25vw;
-    padding: 40px 50px 0 20px;
+    padding: 40px 30px 0 20px;
 }
 
 .messages-block{
@@ -13,10 +13,25 @@
     padding: 20px;
     border: 1px solid var(--color-3);
     border-radius: 12px;
-    max-height: 80vh;
+    height: 76%;
     overflow-y: scroll;
     display: flex;
     flex-direction: column-reverse;
+    color: var(--color-4);
+}
+
+.msg-username {
+    font-size: 14px;
+}
+
+.msg-message{
+    padding-top: 7px;
+    font-size: 16px;
+}
+.msg-date {
+    padding-top: 5px;
+    font-size: 12px;
+    text-align: right;
 }
 
 .message-block{
@@ -35,6 +50,7 @@
     padding: 5px 15px;
     border-radius: 8px;
     border: 1px solid var(--color-3);
+    color: var(--color-4);
     font-size: 14px;
 }
 
@@ -53,4 +69,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.send-message-btn: {
+    border: 1px solid var(--color-3);
+    outline: none;
 }
