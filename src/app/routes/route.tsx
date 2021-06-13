@@ -2,6 +2,7 @@ import React from "react";
 import {BrowserRouter as Router, Route as ReactRoute, Switch} from "react-router-dom";
 import {Welcome} from './welcome'
 import {Call} from './call'
+import {PopupContextLayout} from "../shared";
 
 
 export const Route: React.FC = () => {
@@ -11,7 +12,9 @@ export const Route: React.FC = () => {
                 <Call/>
             </ReactRoute>
             <ReactRoute path='/'>
-                <Welcome/>
+                <PopupContextLayout>
+                    <Welcome/>
+                </PopupContextLayout>
             </ReactRoute>
         </Switch>
     </Router>
