@@ -1,6 +1,6 @@
 import React, {createContext, useState} from 'react'
 
-export const defaultPopupContextValue = {
+const defaultPopupContextValue = {
     showPopup: false,
     setShowPopup() {
     }

@@ -21,7 +21,7 @@ export const Popup: React.FC = () => {
         e.preventDefault()
 
         setCookie('name', name, {path: '/', maxAge: 60 * 60 * 24 * 365})
-        const res = await axios.post('/api/room', {
+        const res = await axios.post('/room', {
             options: {
                 max_people_count: count
             }
