@@ -9,8 +9,6 @@ export const SocketContext = createContext<ISocketContext>({
   socket: undefined,
 });
 
-
-
 export const SocketContextProvider: React.FC = ({ children }) => {
   return (
     <SocketContext.Provider value={{ socket: new SocketAction() }}>
