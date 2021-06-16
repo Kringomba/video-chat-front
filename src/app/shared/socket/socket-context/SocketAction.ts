@@ -8,11 +8,14 @@ export class SocketAction {
   socket: Socket<DefaultEventsMap, DefaultEventsMap> | undefined;
   onMessageSend: ((message: IMessage) => void) | undefined;
   addVideoStream: ((stream: MediaStream) => void) | undefined;
+  removeVideoStream: ((id: number) => void) | undefined;
   stream: MediaStream | undefined;
   private peer: Peer;
+  private peers: any;
 
   constructor() {
     this.peer = new Peer();
+    this.peers = {};
   }
 
   connect(roomId: string, history: any) {
@@ -35,6 +38,9 @@ export class SocketAction {
     this.socket.on(socket_events.JOIN_NEW_USER, (id: string) =>
       this.connectToNewUser(id, this.stream!)
     );
+    this.socket.on(socket_events.DISCONNECT_USER, (id: string) => {
+      this.peers[id]?.close();
+    });
 
     this.peer.on("call", (call) => {
       call.answer(this.stream!);
@@ -56,15 +62,14 @@ export class SocketAction {
 
   connectToNewUser(id: string, stream: MediaStream) {
     const call = this.peer.call(id, stream);
-    const video = document.createElement("video");
     call.on("stream", (userVideoStream) =>
       this.addVideoStream!(userVideoStream)
     );
+    const removeId = Object.keys(this.peers).length;
     call.on("close", () => {
-      video.remove();
+      this.removeVideoStream!(removeId);
     });
-
-    // peers[userId] = call
+    this.peers[id] = call;
   }
 
   sendMessage(message: IMessage) {

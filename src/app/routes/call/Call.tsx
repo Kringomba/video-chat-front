@@ -45,7 +45,8 @@ export const Call: React.FC = () => {
   const configSocket = useCallback(async () => {
     setUpSendMessage();
     socket!.stream = await setUpVideoCall();
-    const localRemoteVideos: Array<MediaStream> = [];
+    let localRemoteVideos: Array<MediaStream> = [];
+
     socket!.addVideoStream = (stream) => {
       if (
         localRemoteVideos.filter(
@@ -55,7 +56,14 @@ export const Call: React.FC = () => {
         localRemoteVideos.push(stream);
         setRemoteVideos([...localRemoteVideos]);
       }
-      console.log(localRemoteVideos);
+    };
+
+    socket!.removeVideoStream = (id) => {
+      localRemoteVideos = localRemoteVideos.filter(
+        (localRemoteVideo, index) => index !== id
+      );
+      setRemoteVideos([...localRemoteVideos]);
+      console.log(localRemoteVideos)
     };
     socket!.connect(id, history);
   }, [setRemoteVideos]);
