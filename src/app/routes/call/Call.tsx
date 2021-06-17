@@ -9,8 +9,8 @@ import { IMessage, useSocket } from "../../shared";
 export const Call: React.FC = () => {
   const localVideo = useRef<HTMLVideoElement>(null);
   const stream = useRef<MediaStream>();
-  const [micro, setMicro] = useState<boolean>(false);
-  const [webcam, setWebcam] = useState<boolean>(false);
+  const [micro, setMicro] = useState<boolean>(true);
+  const [webcam, setWebcam] = useState<boolean>(true);
   const [chat, setChat] = useState<boolean>(false);
   const [remoteVideos, setRemoteVideos] = useState<Array<MediaStream>>([]);
   const [messages, setMessages] = useState<Array<IMessage>>([]);
@@ -40,7 +40,7 @@ export const Call: React.FC = () => {
       console.log(e);
       return undefined;
     }
-  }, [localVideo, stream]);
+  }, []);
 
   const configSocket = useCallback(async () => {
     setUpSendMessage();
@@ -63,10 +63,9 @@ export const Call: React.FC = () => {
         (localRemoteVideo, index) => index !== id
       );
       setRemoteVideos([...localRemoteVideos]);
-      console.log(localRemoteVideos)
     };
     socket!.connect(id, history);
-  }, [setRemoteVideos]);
+  }, []);
 
   useEffect(() => {
     if (!cookies.name) {
@@ -89,6 +88,17 @@ export const Call: React.FC = () => {
       });
     };
   }, [localVideo]);
+
+  useEffect(() => {
+    if (stream.current) {
+      stream.current
+        .getAudioTracks()
+        .forEach((track) => (track.enabled = micro));
+      stream.current
+        .getVideoTracks()
+        .forEach((track) => (track.enabled = webcam));
+    }
+  }, [stream, micro, webcam]);
 
   return (
     <div className="background">
