@@ -4,68 +4,35 @@ import { useCookies } from "react-cookie";
 import { useHistory, useParams } from "react-router-dom";
 import { Chat, RemoteVideo } from "./components";
 import "./style.css";
-import { IMessage, useSocket } from "../../shared";
+import { useSocket } from "../../service";
+import { useSelector } from "react-redux";
 
 export const Call: React.FC = () => {
   const localVideo = useRef<HTMLVideoElement>(null);
-  const stream = useRef<MediaStream>();
-  const [micro, setMicro] = useState<boolean>(true);
-  const [webcam, setWebcam] = useState<boolean>(true);
+  const [microStatus, setMicro] = useState<boolean>(true);
+  const [videoStatus, setVideo] = useState<boolean>(true);
   const [chat, setChat] = useState<boolean>(false);
-  const [remoteVideos, setRemoteVideos] = useState<Array<MediaStream>>([]);
-  const [messages, setMessages] = useState<Array<IMessage>>([]);
   const [cookies] = useCookies(["name"]);
-  const { socket } = useSocket();
-  const { id } = useParams<{ id: string }>();
+  const { call, socket } = useSocket();
   const history = useHistory();
+  const { id } = useParams<{ id: string }>();
 
-  const setUpSendMessage = useCallback(() => {
-    const allMessages: Array<IMessage> = [];
-    socket!.setOnMessageSend = (message: IMessage) => {
-      allMessages.push(message);
-      setMessages([...allMessages]);
-    };
-  }, []);
+  const microAction = useCallback(() => {
+    const micro = !microStatus;
+    setMicro(micro);
+    call.changeMicroStatus(micro);
+  }, [microStatus, call]);
 
-  const setUpVideoCall = useCallback(async () => {
-    try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true,
-      });
-      localVideo.current!.srcObject = mediaStream;
-      stream.current = mediaStream;
-      return mediaStream;
-    } catch (e) {
-      console.log(e);
-      return undefined;
-    }
-  }, []);
+  const videoAction = useCallback(() => {
+    const video = !videoStatus;
+    setVideo(video);
+    call.changeVideoStatus(video);
+  }, [videoStatus, call]);
 
-  const configSocket = useCallback(async () => {
-    setUpSendMessage();
-    socket!.stream = await setUpVideoCall();
-    let localRemoteVideos: Array<MediaStream> = [];
-
-    socket!.addVideoStream = (stream) => {
-      if (
-        localRemoteVideos.filter(
-          (localRemoteVideo) => localRemoteVideo.id === stream.id
-        ).length === 0
-      ) {
-        localRemoteVideos.push(stream);
-        setRemoteVideos([...localRemoteVideos]);
-      }
-    };
-
-    socket!.removeVideoStream = (id) => {
-      localRemoteVideos = localRemoteVideos.filter(
-        (localRemoteVideo, index) => index !== id
-      );
-      setRemoteVideos([...localRemoteVideos]);
-    };
-    socket!.connect(id, history);
-  }, []);
+  const connectToRoom = useCallback(async () => {
+    localVideo.current!.srcObject = await call.createMediaStream();
+    socket.connect(id, history);
+  }, [localVideo, call, socket, id, history]);
 
   useEffect(() => {
     if (!cookies.name) {
@@ -74,50 +41,41 @@ export const Call: React.FC = () => {
       } else {
         history.push("/");
       }
+    } else {
+      if (call.peer?.id !== null) {
+        connectToRoom();
+      } else {
+        call.peer.on("open", () => connectToRoom());
+      }
     }
-    configSocket();
+
     return () => {
-      socket?.socket?.disconnect();
+      socket.disconnect();
     };
   }, []);
 
-  useEffect(() => {
-    return () => {
-      stream.current?.getTracks().forEach(function (track) {
-        track.stop();
-      });
-    };
-  }, [localVideo]);
-
-  useEffect(() => {
-    if (stream.current) {
-      stream.current
-        .getAudioTracks()
-        .forEach((track) => (track.enabled = micro));
-      stream.current
-        .getVideoTracks()
-        .forEach((track) => (track.enabled = webcam));
-    }
-  }, [stream, micro, webcam]);
+  const remoteStreams = useSelector(
+    (state: { remoteStreams: Array<MediaStream> }) => state.remoteStreams
+  );
 
   return (
     <div className="background">
-      {chat ? <Chat messages={messages} /> : null}
+      {chat ? <Chat /> : null}
       <video autoPlay={true} className="local-video" ref={localVideo} />
-      {remoteVideos.map((stream, id) => {
-        return <RemoteVideo key={`remote-video-${id}`} stream={stream} />;
-      })}
+      {remoteStreams.map((stream, id) => (
+        <RemoteVideo key={`remote-video-${id}`} stream={stream} />
+      ))}
       <div className="btn-bottom" style={chat ? { width: "75%" } : undefined}>
         <div className="btn-row">
-          <div className="btn" onClick={() => setMicro(!micro)}>
-            {micro ? (
+          <div className="btn" onClick={microAction}>
+            {microStatus ? (
               <Icon.MicFill size={40} />
             ) : (
               <Icon.MicMuteFill size={40} />
             )}
           </div>
-          <div className="btn" onClick={() => setWebcam(!webcam)}>
-            {webcam ? (
+          <div className="btn" onClick={videoAction}>
+            {videoStatus ? (
               <Icon.CameraVideoFill size={40} />
             ) : (
               <Icon.CameraVideoOffFill size={40} />
