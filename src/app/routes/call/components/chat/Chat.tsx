@@ -25,7 +25,7 @@ export const Chat: React.FC = () => {
     return (
         <div className="chat-block">
             <div className="messages-block">
-                {messages
+                {[...messages]
                   .sort((a, b) => b.date.valueOf() - a.date.valueOf())
                   .map(({ username, message, date }) => (
                     <div

@@ -15,7 +15,6 @@ export class CallService {
   }
 
   private constructor() {
-      console.log('creat instance')
     this.peer = new Peer();
     this.connectToCall();
   }

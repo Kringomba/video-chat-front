@@ -42,7 +42,7 @@ export const Popup: React.FC = () => {
                 <select className="select-count-people" onChange={(event) => setCount(parseInt(event.target.value))}
                         required={true}>
                     <option/>
-                    {new Array(9).fill('').map((_, index) => <option
+                    {new Array(3).fill('').map((_, index) => <option
                         key={`people-number-${index + 2}`}>{index + 2}</option>)}
                 </select>
                 <input type="submit" value="Create"/>

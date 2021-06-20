@@ -61,10 +61,12 @@ export const Call: React.FC = () => {
   return (
     <div className="background">
       {chat ? <Chat /> : null}
-      <video autoPlay={true} className="local-video" ref={localVideo} />
-      {remoteStreams.map((stream, id) => (
-        <RemoteVideo key={`remote-video-${id}`} stream={stream} />
-      ))}
+      <div className="webcams">
+        <video autoPlay={true} className={`webcam ${chat? "webcam_with_chat":""}`} ref={localVideo} />
+        {remoteStreams.map((stream, id) => (
+          <RemoteVideo key={`remote-video-${id}`} stream={stream} chat={chat} />
+        ))}
+      </div>
       <div className="btn-bottom" style={chat ? { width: "75%" } : undefined}>
         <div className="btn-row">
           <div className="btn" onClick={microAction}>
