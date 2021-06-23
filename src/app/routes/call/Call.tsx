@@ -84,7 +84,14 @@ export const Call: React.FC = () => {
             )}
           </div>
           <div className="btn" onClick={() => setChat(!chat)}>
-            <Icon.ChatLeft size={40} />
+            <Icon.ChatLeftFill size={40} />
+          </div>
+          <div className="btn" onClick={() =>  navigator.permissions.query({name: "clipboard-write"}).then(result => {
+            if (result.state == "granted" || result.state == "prompt") {
+              navigator.clipboard.writeText(window.location.href)
+            }
+          })}>
+            <Icon.PeopleFill size={40} />
           </div>
           <div
             className="btn"
